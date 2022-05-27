@@ -1,5 +1,5 @@
 ### Calendar based on vanilla JS/Local Storage/CSS
 
-[Demo](https://www.loom.com/share/6ebec7a09e0140288fe88ab03a9b4d6a)
+[Demo](https://www.loom.com/share/1dfb260f9c8d438187f178c693e8c560)
 
 
