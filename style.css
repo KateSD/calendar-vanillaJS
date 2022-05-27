@@ -140,3 +140,8 @@ button {
     position: absolute;
     background-color: rgba(0, 0, 0, 0.8);
 }
+
+#inputDate{
+    margin-top: 10px;
+    margin-bottom: 10px;
+}

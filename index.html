@@ -32,6 +32,14 @@
 <div id="newEventModal">
     <h2>New Event</h2>
 
+    <label for="fewDayEvent">
+        <input type="checkbox" id="fewDayEvent" name="fewDayEvent" onclick="onCheckBox()">Add event for few days?
+    </label>
+    <div id="inputDate">
+        <input type="date" id="startDate">
+        <input type="date" id="endDate">
+    </div>
+
     <input id="eventTitleInput" placeholder="Event Title">
 
     <button id="saveButton">Save</button>
