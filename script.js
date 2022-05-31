@@ -1,5 +1,6 @@
 let nav = 0;
 let clicked = null;
+let clickedId = null;
 let events = localStorage.getItem('events') ? JSON.parse(localStorage.getItem('events')) : [];
 let resultStartDate, startDay, startMonth, startYear;
 let resultEndDate, endDay, endMonth, endYear;
@@ -37,6 +38,7 @@ function resultDate(){
     let chosenDays = []
     let res1=[]
     let res2=[]
+    if(checkBox.checked){
     if(startMonth<endMonth){
       for(let i=+startDay; i<=daysInMonth; i++){
           res1.push(`${startMonth}/${(i).toString()}/${startYear}`)
@@ -50,6 +52,9 @@ function resultDate(){
             chosenDays.push(`${startMonth}/${(i).toString()}/${startYear}`)
         }
     }
+    }else{
+        chosenDays=[];
+    }
     return chosenDays;
 }
 
@@ -60,14 +65,20 @@ function onCheckBox(){
     } else {
         startDate.disabled=true
         endDate.disabled=true
-        startDate.valueAsDate=null;
-        endDate.valueAsDate=null;
+        startDate.valueAsDate=null
+        endDate.valueAsDate=null
+        resultDate()
     }
 }
 
-function openModal(date) {
-    clicked = date;
-    const eventForDay = events.find(e => e.date === clicked);
+function openModalClickedEvent(id,date) {
+    clicked=date;
+    clickedId=id;
+    if(clickedId===null){
+        newEventModal.style.display='inline'
+        backDrop.style.display = 'block';
+    }else {
+    const eventForDay = events.find(e => e.id === clickedId);
     if (eventForDay) {
         document.getElementById('eventText').innerText = eventForDay.title;
         deleteEventModal.style.display = 'block'
@@ -75,6 +86,7 @@ function openModal(date) {
         newEventModal.style.display = 'block';
     }
     backDrop.style.display = 'block';
+    }
 }
 
 function load() {
@@ -104,17 +116,20 @@ function load() {
         const dayString = `${month + 1}/${i - paddingDay}/${year}`
         if (i > paddingDay) {
             daySquare.innerText = i - paddingDay;
-            const eventForDay = events.find(e => e.date === dayString);
+            const eventForDay=events.filter(el=>el.date===dayString)
             if (i - paddingDay === day && nav === 0) {
                 daySquare.id = 'currentDay'
             }
             if (eventForDay) {
-                const eventDiv = document.createElement('div');
-                eventDiv.classList.add('event');
-                eventDiv.innerText = eventForDay.title;
-                daySquare.appendChild(eventDiv)
+                for(let i=0; i<eventForDay.length; i++){
+                    const eventDiv = document.createElement('div');
+                    eventDiv.classList.add('event');
+                    eventDiv.innerText=eventForDay[i].title
+                    daySquare.appendChild(eventDiv)
+                    eventDiv.addEventListener('click',()=>openModalClickedEvent(eventForDay[i].id, dayString))
+                }
             }
-            daySquare.addEventListener('click', () => openModal(dayString));
+            daySquare.addEventListener('click', () => openModalClickedEvent(clickedId,dayString));
         } else {
             daySquare.classList.add('padding')
         }
@@ -129,10 +144,10 @@ function closeModal() {
     backDrop.style.display = 'none';
     eventTitleInput.value = '';
     clicked = null;
+    clickedId=null;
     startDate.valueAsDate=null;
     endDate.valueAsDate=null;
-    checkBox.checked=false
-    resultDate().length=0
+    checkBox.checked=false;
     load();
 }
 
@@ -142,6 +157,7 @@ function saveEvent() {
         eventTitleInput.classList.remove('error')
         if (totalChoice.length === 0) {
             events.push({
+                id:Math.round(Math.random()*100000),
                 date: clicked,
                 title: eventTitleInput.value,
             })
@@ -149,6 +165,7 @@ function saveEvent() {
             for (let i = 0; i < totalChoice.length; i++) {
                 events.push(
                     {
+                        id:Math.round(Math.random()*100000),
                         date: totalChoice[i],
                         title: eventTitleInput.value
                     })
@@ -159,10 +176,11 @@ function saveEvent() {
     } else {
         eventTitleInput.classList.add('error')
     }
+    totalChoice.length=0;
 }
 
 function deleteEvent() {
-    events = events.filter(e => e.date !== clicked);
+    events=events.filter(e=>e.id!==clickedId)
     localStorage.setItem('events', JSON.stringify(events));
     closeModal();
 }
